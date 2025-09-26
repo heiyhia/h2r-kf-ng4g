@@ -39,3 +39,7 @@ preview_id = ""
 binding = "MESSAGE_TRACKER"
 id = "6c86b8071f254c81b37d54ab6c7ec7c2"
 preview_id = ""
+
+[observability]
+enabled = true
+head_sampling_rate = 1 # optional. default = 1.
