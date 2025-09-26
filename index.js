@@ -532,7 +532,7 @@ async function processUserMessage(externalUserid, content, msgid, msgKfId, wxCli
         console.log(`消息 ${messageKey} 已处理，跳过`);
         return;
     }
-    
+    console.log('user message:', content)
     console.log('处理用户消息:', {
         externalUserid,
         content,
@@ -557,7 +557,7 @@ async function processUserMessage(externalUserid, content, msgid, msgKfId, wxCli
         const aiConfig = getAIConfig(env);
         validateAIConfig(aiConfig);
         const aiClient = new OpenAIClient(aiConfig);
-
+        console.log('Assistan Request:\n', JSON.stringify(aiMessages, null, 2));
         // 获取AI响应
         const response = await aiClient.chatCompletion({ messages: aiMessages });
 
