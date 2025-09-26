@@ -9,7 +9,7 @@ compatibility_flags = ["nodejs_compat"]
 name = "wechat-customer-service"
 # 微信企业号配置
 WECHAT_CORP_ID="wx74c026e563a3b7ed"
-WECHAT_KF_SECRET="jmC5OFQ8agUd1xwV7zttaAD5WlOu5IVCAfHtRotqsdC"
+WECHAT_KF_SECRET="aKBJBDh78pLakiJUbT1s0so0V-cgDKHqawwE6SnoVcA"
 WECHAT_KF_TOKEN="nJG4gQ"
 WECHAT_KF_ENCODING_AES_KEY="jmC5OFQ8agUd1xwV7zttaAD5WlOu5IVCAfHtRotqsdC"
 
