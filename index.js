@@ -518,16 +518,29 @@ async function handleCallbackAsync(postData, env, params) {
 async function processUserMessage(externalUserid, content, msgid, msgKfId, wxClient, env) {
     // 检查 KV 存储是否配置
     if (!env.CONVERSATIONS || !env.MESSAGE_TRACKER) {
-        throw new Error('CONVERSATIONS or MESSAGE_TRACKER KV namespace not configured');
-    }
-
-    const messageTracker = new MessageTracker(env.MESSAGE_TRACKER);
-    const isProcessed = await messageTracker.isMessageProcessed(msgid);
-
-    if (isProcessed) {
-        console.log(`消息 ${msgid} 已处理，跳过`);
+        console.error('KV 命名空间未配置');
         return;
     }
+
+    // 使用组合键确保消息唯一性
+    const messageKey = `${msgid}_${externalUserid}`;
+    const messageTracker = new MessageTracker(env.MESSAGE_TRACKER);
+    
+    // 检查消息是否已处理
+    const isProcessed = await messageTracker.isMessageProcessed(messageKey);
+    if (isProcessed) {
+        console.log(`消息 ${messageKey} 已处理，跳过`);
+        return;
+    }
+    
+    console.log('处理用户消息:', {
+        externalUserid,
+        content,
+        msgid,
+        msgKfId,
+        messageKey,
+        timestamp: new Date().toISOString()
+    });
 
     try {
         // 创建对话管理器
@@ -576,11 +589,11 @@ async function processUserMessage(externalUserid, content, msgid, msgKfId, wxCli
         }
 
         // 标记消息为已处理
-        await messageTracker.markMessageAsProcessed(msgid, {
+        await messageTracker.markMessageAsProcessed(messageKey, {
             externalUserid,
-            content,
-            assistantMessage,
-            success: true,
+            content: content.substring(0, 100) + (content.length > 100 ? '...' : ''), // 只保存部分内容
+            assistantMessage: assistantMessage.substring(0, 100) + (assistantMessage.length > 100 ? '...' : ''),
+            success: true
         });
     } catch (error) {
         console.error('AI处理失败:', error);
@@ -594,11 +607,11 @@ async function processUserMessage(externalUserid, content, msgid, msgKfId, wxCli
         }
 
         // 标记消息为已处理（即使失败也要标记，避免重复处理）
-        await messageTracker.markMessageAsProcessed(msgid, {
+        await messageTracker.markMessageAsProcessed(messageKey, {
             externalUserid,
-            content,
+            content: content ? (content.substring(0, 100) + (content.length > 100 ? '...' : '')) : 'empty',
             error: error.message,
-            success: false,
+            success: false
         });
     }
 }
